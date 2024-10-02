@@ -1,0 +1,18 @@
+Processes Creation and Management
+2. 
+a. There are many possibilities since the parent process 
+needs to wait for both child processes to exit before itself exits, 
+but the order in which its children exit doesn´t matter, so in 
+the example given, P2 need to wait for its children P5 and P6 to exit,
+but it could either exit in the order 56 or 65 and both would be valid.
+b. 1234560 is not possible since P0 can´t exit and 
+print until its children P1 and P2 exit.
+
+STrace
+1. The program "echo" was executed with its path being "/bin/echo"
+2. The one argument passed was the string "hello world from strace\n"
+3. File descriptor one is STDOUT (standard output) and file descriptor two
+   is STDERR (standard error)
+4. When the program writes to file descriptor 1 it displays the content
+   in the terminal
+5. The program outputs a 0 to the OS letting it now it executed with no errors.
