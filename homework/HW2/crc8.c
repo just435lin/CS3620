@@ -25,9 +25,9 @@ void fileCRC8(char* file) {
     FILE* inputfile = fopen(file, "r");
     if (inputfile == NULL) {
         perror("Error opening file");
-        return 1;
+        return;
     }
-    uint8_t* buffer = NULL;
+    char* buffer = NULL;
     long buffersize = 0;
 
     if (fseek(inputfile,0L,SEEK_END)==0) {
@@ -35,20 +35,17 @@ void fileCRC8(char* file) {
 
         if (buffersize==-1) {return;}
 
-        buffer = malloc(sizeof(uint8_t)*(buffersize+1));
+        buffer = malloc(sizeof(char*)*(buffersize));
 
         if (fseek(inputfile,0L,SEEK_SET)!=0) {return;}
 
-        size_t len = fread(buffer,sizeof(uint8_t),buffersize,inputfile);
-
+        size_t len = fread(buffer,1,buffersize,inputfile);
         if (ferror(inputfile)!=0) {
             fputs("Error reading file", stderr);
-        } else {
-            buffer[len++] = '\0';
         }
-
+        u_int8_t crc = gencrc((uint8_t*)buffer,len);
+        printf("%s=%d\n",file,crc);
     }
-
     fclose(inputfile);
     free(buffer);
 }
@@ -56,10 +53,11 @@ void fileCRC8(char* file) {
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
-        return;
+        return 0;
     }
-
+    
     for (int i=1;i<argc;i++) {
+        int status;
         pid_t pid = fork();
         if (pid!=0) {
             wait(NULL);
@@ -69,7 +67,8 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    char a[] = "This is a test and only a test";
-    printf("%s crc=%d\n", a, gencrc((uint8_t *)&a, strlen(a)));
+    //char a[] = "This is a test and only a test";
+    //printf("%s crc=%d\n", a, gencrc((uint8_t *)&a, strlen(a)));
+    
     return 0;
 }
