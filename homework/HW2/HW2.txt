@@ -1,12 +1,14 @@
 Processes Creation and Management
-2. 
-a. There are many possibilities since the parent process 
-needs to wait for both child processes to exit before itself exits, 
-but the order in which its children exit doesn´t matter, so in 
-the example given, P2 need to wait for its children P5 and P6 to exit,
-but it could either exit in the order 56 or 65 and both would be valid.
-b. 1234560 is not possible since P0 can´t exit and 
-print until its children P1 and P2 exit.
+2. *Note: assumption is the print comes before forking its children,
+          rather than right before exit
+a. There are many possibilities since the scheduler can decide to either
+execute the parent or the 1st child process after the fork. If it executes
+the child process first than it will print before the 2nd child is created
+and prints, ie 256. But if the scheduler decides to execute the parent and
+continue with its 2nd child process than it will print before the 1st child,
+ie 265. But both are valid.
+b. 1234560 is not possible since P0 have to have already executed its
+print before creating its children.
 
 STrace
 1. The program "echo" was executed with its path being "/bin/echo"
