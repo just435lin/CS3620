@@ -24,7 +24,8 @@ uint8_t gencrc(uint8_t *data, size_t len) {
 void fileCRC8(char* file) {
     FILE* inputfile = fopen(file, "r");
     if (inputfile == NULL) {
-        perror("Error opening file");
+        printf("Error opening file:%s\n", file);
+        fclose(inputfile);
         return;
     }
     char* buffer = NULL;
@@ -33,18 +34,35 @@ void fileCRC8(char* file) {
     if (fseek(inputfile,0L,SEEK_END)==0) {
         buffersize = ftell(inputfile);
 
-        if (buffersize==-1) {return;}
+        if (buffersize==-1) {
+            printf("Invalid buffer in:%s\n",file);
+            fclose(inputfile);
+            return;
+        }
 
         buffer = malloc(sizeof(char*)*(buffersize));
 
-        if (fseek(inputfile,0L,SEEK_SET)!=0) {return;}
+        if (fseek(inputfile,0L,SEEK_SET)!=0) {
+            printf("Failed to find start of file:%s\n",file);
+            fclose(inputfile);
+            free(buffer);
+            return;
+        }
 
         size_t len = fread(buffer,1,buffersize,inputfile);
         if (ferror(inputfile)!=0) {
-            fputs("Error reading file", stderr);
+            printf("Error reading file:%s\n",file);
+            fclose(inputfile);
+            free(buffer);
+            return;
         }
         u_int8_t crc = gencrc((uint8_t*)buffer,len);
         printf("%s=%d\n",file,crc);
+    } else {
+        printf("Failed to find end of file:%s\n",file);
+        fclose(inputfile);
+        free(buffer);
+        return;
     }
     fclose(inputfile);
     free(buffer);
