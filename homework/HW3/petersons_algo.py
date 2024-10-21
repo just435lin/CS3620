@@ -26,12 +26,16 @@ class State:
         
 
     def label():
-        label = f'{{State {self.StateCnt}|turn: {self.turn}|try0: {self.try0}|try1: {self.try1}|pc0: {self.pc0}|pc1: {self.pc1}}}'
+        label = f'<<record>\n <turn>: {self.turn}| <try0>: {self.try0}| <try1>: {self.try1}| <pc0>: {self.pc0}| <pc1>: {self.pc1} |\n</record>>'
         return label
 
 def render(all_states):
-
     dot = Digraph()
+    for state in all_states:
+        dot.node(str(state.StateCnt), label=state.label(), shape='record')
+        for child in state.children:
+            dot.edge(str(state.StateCnt), str(child.StateCnt), label='link')
+    dot.render("state_graph", format="pdf", cleanup=True)
 
 
 def compute_next_state(state : State, proc : int):
