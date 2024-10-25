@@ -32,9 +32,11 @@ class State:
 
 
         #Below is what I want, I followed the format GPT gave me doesn´t work, gives a error near 'turn' message
-        label = f'<record><turn>turn: {self.turn}| <turn><try0>try0: {self.try0}<try0>| <try1>try1: {self.try1}<try1>| <pc0>pc0: {self.pc0}<pc0>| <pc1>pc1: {self.pc1}<pc1></record>'
+        #label = f'<record><turn>turn: {self.turn}| <turn><try0>try0: {self.try0}<try0>| <try1>try1: {self.try1}<try1>| <pc0>pc0: {self.pc0}<pc0>| <pc1>pc1: {self.pc1}<pc1></record>'
         
         #label = '<record>test<record>'  #This short thing also doesn´t work gives a error near '>' message
+        
+        label = f'<<TABLE BORDER="0"><TR><TD PORT="f0">turn:{self.turn}</TD></TR><TR><TD PORT="f1">try0:{self.try0}</TD></TR><TR><TD PORT="f2">try1:{self.try1}</TD></TR><TR><TD PORT="f3">pc0:{self.pc0}</TD></TR><TR><TD PORT="f4">pc1:{self.pc1}</TD></TR></TABLE>>'
         return label
 
 def render(all_states):
@@ -143,7 +145,7 @@ def encodeState(state : State):
 
 if __name__ == '__main__':
     all_states = explore_all_states()
-    print(len(all_states))
+    #print(len(all_states))
     render(all_states)
     
     if False:
@@ -151,10 +153,11 @@ if __name__ == '__main__':
         dot = Digraph(comment='Graph with Record Labels', format='pdf')
 
         # Define nodes using the <record> structure
-        dot.node('A', label='<record><f0>Record A | </f0><f1>Details about A</f1>|<f2>More info here</f2></record>')
-        dot.node('B', label='<record><f0>Record B | </f0><f1>Details about B</f1>|<f2>More info here</f2></record>')
-        dot.node('C', label='<record><f0>Record C | </f0><f1>Details about C</f1>|<f2>More info here</f2></record>')
-        dot.node('D', label='<record><f0>Record D | </f0><f1>Details about D</f1>|<f2>More info here</f2></record>')
+        dot.node('A', label = '<record <f0>dfdf>', shape = 'record')
+        #dot.node('A', label=f'<record><turn> dturn\: | <turn><try0> try0: <try0>| <try1> try1: <try1>| <pc0> pc0: <pc0>| <pc1> pc1: <pc1></record>', shape='record')
+        #dot.node('B', label='<record><f0>Record B | </f0><f1>Details about B</f1>|<f2>More info here</f2></record>')
+        #dot.node('C', label='<record><f0>Record C | </f0><f1>Details about C</f1>|<f2>More info here</f2></record>')
+        #dot.node('D', label='<record><f0>Record D | </f0><f1>Details about D</f1>|<f2>More info here</f2></record>')
 
         # Add edges (relationships between records)
         dot.edge('A', 'B', label='related to')
