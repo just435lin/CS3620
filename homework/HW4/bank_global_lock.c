@@ -17,18 +17,77 @@ typedef struct ledger {
     pthread_mutex_t lock;
 } ledger_t;
 
+account_t* contains_account(unsigned int account, void *ledger) {
+    ledger_t *bank = ledger;
+    if (bank->head == NULL) { //zero accounts exists
+        return NULL;
+    } 
+
+    if (bank->head == bank->tail) { //only one account exist
+        if (bank->head->account == account) {
+            return bank->head;
+        } else {
+            return NULL;
+        }
+    }
+
+    account_t *curr = bank->head;
+    while (curr != NULL) {
+        if (curr->account == account) {
+            return curr;
+        }
+        curr = curr->next;
+    }
+    return NULL;
+}
+
 int create_account(unsigned int account, void *ledger) {
-    // TODO:
-    return -1;
+    ledger_t *bank = ledger;
+    account_t *new_account = (account_t*)malloc(sizeof(account_t));
+    new_account->account = account;
+    new_account->balance = 0;
+    new_account->next = NULL;
+
+    if (bank->head == NULL) {
+        bank->head = new_account;
+        bank->tail = new_account;
+    } else if (contains_account(account, ledger) == NULL) {
+            bank->tail->next = new_account;
+            bank->tail = new_account;
+    } else {
+        return -1;
+    }
 }
 
 void list_accounts(void *ledger) {
-   // TODO:
+    ledger_t *bank = ledger;
+    if (bank->head == NULL) { //zero accounts exists
+        printf("No accounts have been created\n");
+        return; 
+    } 
+    if (bank->head == bank->tail) { //only one account exist
+        unsigned int acc_num = bank->head->account;
+        int acc_bal = bank->head->balance;
+        printf("%u: $%d\n", acc_num, acc_bal);
+        return;
+    }
+
+    account_t *curr = bank->head;
+    while (curr != NULL) {
+        unsigned int acc_num = curr->account;
+        int acc_bal = curr->balance;
+        printf("%u: $%d\n", acc_num, acc_bal);
+        curr = curr->next;
+    }
 }
 
 int modify_balance(unsigned int account, int amount, void *ledger) {
-    // TODO:
-    return 0;
+    account_t* acc = contains_account(account, ledger);
+    if (acc != NULL) {
+        acc->balance = acc->balance + amount;
+        return 0;
+    }
+    return -1;
 }
 
 int main() {
