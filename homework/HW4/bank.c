@@ -54,6 +54,7 @@ int create_account(unsigned int account, void *ledger) {
     } else {
         return -1;
     }
+    return 0;
 }
 
 void list_accounts(void *ledger) {
