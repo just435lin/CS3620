@@ -16,7 +16,10 @@ typedef struct ledger {
 
 account_t* contains_account(unsigned int account, void *ledger) {
     ledger_t *bank = ledger;
-    if (bank->head == NULL) { return NULL; } //zero accounts exists
+    if (bank->head == NULL) { //zero accounts exists
+        return NULL;
+    } 
+
     if (bank->head == bank->tail) { //only one account exist
         if (bank->head->account == account) {
             return bank->head;
@@ -24,6 +27,7 @@ account_t* contains_account(unsigned int account, void *ledger) {
             return NULL;
         }
     }
+
     account_t *curr = bank->head;
     while (curr != NULL) {
         if (curr->account == account) {
@@ -35,7 +39,6 @@ account_t* contains_account(unsigned int account, void *ledger) {
 }
 
 int create_account(unsigned int account, void *ledger) {
-    // TODO:
     ledger_t *bank = ledger;
     account_t *new_account = (account_t*)malloc(sizeof(account_t));
     new_account->account = account;
@@ -51,12 +54,9 @@ int create_account(unsigned int account, void *ledger) {
     } else {
         return -1;
     }
-
-    return 0;
 }
 
 void list_accounts(void *ledger) {
-    // TODO:
     ledger_t *bank = ledger;
     if (bank->head == NULL) { //zero accounts exists
         printf("No accounts have been created\n");
@@ -79,7 +79,6 @@ void list_accounts(void *ledger) {
 }
 
 int modify_balance(unsigned int account, int balance, void *ledger) {
-    // TODO:
     account_t* acc = contains_account(account, ledger);
     if (acc != NULL) {
         acc->balance = acc->balance + balance;
