@@ -41,9 +41,9 @@ account_t* get_account(unsigned int account, void *ledger) {
     return NULL;
 }
 
-int create_account(unsigned int account, ledger_t *l) {
-    //pthread_rwlock_t *lock = &(((ledger_t*)ledger)->lock);
-    //pthread_rwlock_lock(lock);
+int create_account(unsigned int account, ledger_t *ledger) {
+    pthread_rwlock_t *lock = &(((ledger_t*)ledger)->lock);
+    pthread_rwlock_wrlock(lock);
     int status = 0;
     ledger_t *bank = ledger;
     account_t *new_account = (account_t*)malloc(sizeof(account_t));
@@ -61,47 +61,45 @@ int create_account(unsigned int account, ledger_t *l) {
     } else {
         status = -1;
     }
-    //pthread_mutex_unlock(lock);
+    pthread_rwlock_unlock(lock);
     return status;
 }
 
 void list_accounts(void *ledger) {
-    //pthread_mutex_t *lock = &(((ledger_t*)ledger)->lock);
-    //pthread_mutex_lock(lock);
+    pthread_rwlock_t *lock = &(((ledger_t*)ledger)->lock);
+    pthread_rwlock_wrlock(lock);
     ledger_t *bank = ledger;
-    if (bank->head == NULL) { //zero accounts exists
+    if (bank->head == NULL) {                       //zero accounts exists
         printf("No accounts have been created\n");
-        //pthread_mutex_unlock(lock);
-        return; 
-    } 
-    if (bank->head == bank->tail) { //only one account exist
+    } else if (bank->head == bank->tail) {          //only one account exist
         unsigned int acc_num = bank->head->account;
         int acc_bal = bank->head->balance;
         printf("%u: $%d\n", acc_num, acc_bal);
-        //pthread_mutex_unlock(lock);
-        return;
+    } else {
+        account_t *curr = bank->head;
+        while (curr != NULL) {
+            unsigned int acc_num = curr->account;
+            int acc_bal = curr->balance;
+            printf("%u: $%d\n", acc_num, acc_bal);
+            curr = curr->next;
+        }
     }
-
-    account_t *curr = bank->head;
-    while (curr != NULL) {
-        unsigned int acc_num = curr->account;
-        int acc_bal = curr->balance;
-        printf("%u: $%d\n", acc_num, acc_bal);
-        curr = curr->next;
-    }
-    //pthread_mutex_unlock(lock);
+    pthread_rwlock_unlock(lock);
 }
 
-int modify_balance(unsigned int account, int amount, ledger_t *l) {
-    //pthread_mutex_t *lock = &(((ledger_t*)ledger)->lock);
-    //pthread_mutex_lock(lock);
+int modify_balance(unsigned int account, int amount, ledger_t *ledger) {
+    pthread_rwlock_t *lock = &(((ledger_t*)ledger)->lock);
+    pthread_rwlock_wrlock(lock);
     int status = -1;
     account_t* acc = get_account(account, ledger);
+    pthread_mutex_t *acc_lock = &(acc->lock);
     if (acc != NULL) {
+        pthread_mutex_lock(acc_lock);
         acc->balance = acc->balance + amount;
+        pthread_mutex_unlock(acc_lock);
         status = 0;
     }
-    //pthread_mutex_unlock(lock);
+    pthread_rwlock_unlock(lock);
     return status;
 }
 
